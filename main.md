@@ -4,7 +4,7 @@ Voici mes recherches sur Java 16.0.2 et une version MC 1.17
 
 Voici ce que vous devais absolument avoir dans votre Main :  
 
-package fr.taygy.monplugin;
+package fr.taygy.monplugin;  // a changer selon votre nom de domaine
 
 import org.bukkit.plugin.java.JavaPlugin;
 
