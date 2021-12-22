@@ -1,3 +1,5 @@
+//Commande pour faire spawn des items dans l'inventaire des joueurs rejoignant le serveur. 
+
 package fr.taygy.monplugin;
 
 import java.util.Arrays;
