@@ -1,0 +1,103 @@
+//nom de domaine //ce code permet de creer un interface sur n'importe quel object et de cliquer sur un object dans cette inventaire pour changer de mode de jeu ou se give des objets. 
+
+import java.util.Arrays;
+
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+public class MonPluginListeners implements Listener {
+
+	@EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+
+        Player player = event.getPlayer();
+        player.getInventory().clear();
+        //player.getInventory().addItem(new ItemStack(Material.IRON_SWORD, 3));
+
+
+        ItemStack boussole = new ItemStack(Material.COMPASS, 1);
+        ItemMeta customM = boussole.getItemMeta();
+        customM.setDisplayName("§cMa Boussole");
+        customM.setLore(Arrays.asList("Premier ligne","2e ligne","3e Ligne"));
+        customM.addEnchant(Enchantment.DAMAGE_ALL, 200 , true);
+        customM.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+
+        boussole.setItemMeta(customM);
+
+        player.getInventory().setItem(4,boussole);
+
+        player.updateInventory();
+	}
+	@EventHandler
+	public void onInteract(PlayerInteractEvent event) {
+		Player player = event.getPlayer();
+		Action action = event.getAction();
+		ItemStack it = event.getItem();
+		
+		if(it == null) return;
+		
+		
+		if(it.getType()== Material.DIAMOND_HOE) {
+			if(action == Action.RIGHT_CLICK_AIR) {
+				player.sendMessage("Vous venez de faire un click");
+			}
+		}
+		if(it.getType() == Material.COMPASS && it.hasItemMeta() && it.getItemMeta().hasDisplayName() && it.getItemMeta().getDisplayName().equalsIgnoreCase("§cMa Boussole")) {
+			//player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
+			Inventory inv = Bukkit.createInventory(null, 27 , "§8Mon Menu");
+			
+			inv.setItem(11, getItem(Material.PAPER, "§a Passage en gamemode 3"));
+			inv.setItem(14, getItem(Material.ANVIL, "§b Give de TNT"));
+			
+			player.openInventory(inv);
+		}
+	
+	}
+	@EventHandler
+	public void onClick(InventoryClickEvent event) {
+		Player player =(Player) event.getWhoClicked();
+		Inventory inv =  event.getInventory();
+		ItemStack current = event.getCurrentItem();
+		
+		if(current == null) return;
+		
+		if(event.getView().getTitle().equalsIgnoreCase("§8Mon menu")) { 
+			
+			event.setCancelled(true);
+			
+			if(current.getType()==Material.PAPER) {
+				player.closeInventory();
+				player.setGameMode(GameMode.SPECTATOR);
+			}
+			if(current.getType()==Material.ANVIL) {
+				player.closeInventory();
+				player.getInventory().addItem(new ItemStack(Material.TNT,3));
+			}
+		
+		}
+		
+	}
+	public ItemStack getItem(Material material, String customName) {
+		ItemStack it = new ItemStack(material,1);
+		ItemMeta itM = it.getItemMeta();
+		itM.setDisplayName("Passage en gamemode 3");
+		it.setItemMeta(itM);
+		return it;
+		
+		
+	}
+	
+}
