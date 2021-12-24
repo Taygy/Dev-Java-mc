@@ -1,0 +1,32 @@
+package fr.taygy.staffmode;
+
+import org.bukkit.plugin.java.JavaPlugin;
+
+
+import fr.taygy.staffmode.commande.CommandStaffmode;
+import fr.taygy.staffmode.commande.ParametreStaffMode;
+
+
+
+public class Principale extends JavaPlugin {
+	
+	
+	
+	@Override
+	public void onEnable() {
+		
+		 
+	      System.out.println("Le plugin est ouvert !!");
+	      getCommand("staffmod").setExecutor(new CommandStaffmode());
+	      getServer().getPluginManager().registerEvents(new ParametreStaffMode(), this );
+
+	}
+
+	
+	
+	@Override
+	public void onDisable() {
+		System.out.println("Le plugin viens de s'eteindre"); 
+	}
+
+}
