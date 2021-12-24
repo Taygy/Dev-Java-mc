@@ -1,0 +1,70 @@
+package fr.taygy.staffmode.commande;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+//import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+public class ParametreStaffMode implements Listener {
+
+	@EventHandler //Le joueur se fait clear lorsque il join le serv
+    public void onJoin(PlayerJoinEvent event) {
+
+        Player player = event.getPlayer();
+        player.getInventory().clear();
+	}
+	@EventHandler //Le joueur lorsque il utilise la commande /staffmode recupere des objets.
+    public void onCommand(PlayerInteractEvent event) {
+
+        Player player = event.getPlayer();
+        player.getInventory().clear();
+        //player.getInventory().addItem(new ItemStack(Material.IRON_SWORD, 3));
+
+
+        ItemStack stick = new ItemStack(Material.STICK, 1);
+        ItemMeta customM = stick.getItemMeta();
+        customM.setDisplayName("§cStick du Staff");
+        customM.addEnchant(Enchantment.KNOCKBACK, 2 , true);
+        customM.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+
+        stick.setItemMeta(customM);
+
+        player.getInventory().setItem(4,stick);
+
+        player.updateInventory();
+	}
+	
+	@EventHandler //creer un inventaire pour changer l'enchant du stick
+	public void stickInventaire(PlayerInteractEvent event) {
+		Player player = event.getPlayer();
+		ItemStack it = event.getItem();
+		
+		if(it.getType() == Material.STICK && it.hasItemMeta() && it.getItemMeta().hasDisplayName() && it.getItemMeta().getDisplayName().equalsIgnoreCase("§cStick du Staff")) {
+			Inventory inv = Bukkit.createInventory(null, 9 , "§8Mon Menu");
+			
+			inv.setItem(3, getItem(Material.POTION, "§aKnockback 1"));
+			inv.setItem(4, getItem(Material.POTION, "§bKnockback 10"));
+			inv.setItem(5, getItem(Material.POTION, "§bKnockback 30"));
+			
+			player.openInventory(inv);
+		}
+			
+	}
+		public ItemStack getItem(Material material, String customName) {
+			ItemStack it = new ItemStack(material,1);
+			ItemMeta itM = it.getItemMeta();
+			it.setItemMeta(itM);
+			return it;
+			
+			
+		}		
+	}
