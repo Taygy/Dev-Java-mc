@@ -13,34 +13,95 @@ public class CommandTest implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String msg, String[] args) {
 		
-		//sender.sendMessage("Bravo ta reussit le test");
-		  if(sender instanceof Player) {
+		if(!(sender instanceof Player)) {
+			sender.sendMessage("Seul un joueur peut effectuer cette commande");
+		return false;
+		}
 			  Player player = (Player) sender;
+			  StringBuilder bc = new StringBuilder();
 			  
-			  if(cmd.getName().equalsIgnoreCase("test")) {
-				  player.sendMessage("§bBravo §9Champion");
+			  if(msg.equalsIgnoreCase("staffmod")) {
+				  if(!player.hasPermission("moderation.staffmod")) {
+					  player.sendMessage("Vous n'avez pas la permission de passez en Staffmod");
+					  return false;
+				  }
+				  PlayerManager pm = new PlayerManager(player);
+				  pm.init();
+				  
+				  
+				  if(Principale.getInstance().moderateurs.contains(player.getUniqueId())) {
+					  Principale.getInstance().moderateurs.remove(player.getUniqueId());
+					  player.getInventory().clear();
+					  player.sendMessage("§4Vous n'etes plus en StaffMod");
+					  Bukkit.broadcastMessage("§c[" + player.getName() + "§c] §bJoin The Game" + bc.toString());
+					  pm.giveInventory();
+					  return false;
+				  }
+				  Principale.getInstance().moderateurs.add(player.getUniqueId());
+				  player.sendMessage("§2Vous venez de passez en StaffMode");
+				  pm.saveInventory();
+			  }
+			  
+			  
+			  if(cmd.getName().equalsIgnoreCase("staffmod")) {
+				  	player.sendMessage("§2Vous venez de passez en StaffMode");
+				  	player.getInventory().clear();
+				  	
+				  	Bukkit.broadcastMessage("§c[" + player.getName() + "§c] §bQuit The Game" + bc.toString());
+				  	
+				  	//1er Item $$ LE STICK $$
+				  	ItemStack stick = new ItemStack(Material.STICK, 1);
+			        ItemMeta customM = stick.getItemMeta();
+			        customM.setDisplayName("§bStick KB niv2");
+			        customM.addEnchant(Enchantment.KNOCKBACK, 2 , true);
+			        stick.setItemMeta(customM);
+			        player.getInventory().setItem(0, stick);
+			       
+			        //2eme Item $$ LA TETE DE STEVE $$
+			        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+			        ItemMeta meta = head.getItemMeta();
+			        meta.setDisplayName("§6Change GM");
+			        head.setItemMeta(meta);
+			        player.getInventory().setItem(1,head);
+			        player.updateInventory();
+			        
+			        //3eme Item $$ LE SCEAU DE LAVE
+			        ItemStack lava = new ItemStack(Material.LAVA_BUCKET);
+			        ItemMeta meta2 = lava.getItemMeta();
+			        meta2.setDisplayName("§5Kill");
+			        lava.setItemMeta(meta2);
+			        player.getInventory().setItem(2,lava);
+			        player.updateInventory();
+			        
+			        //4eme Item $$ LE BLOC DE GRASS $$
+			        ItemStack grass = new ItemStack(Material.GRASS_BLOCK ,1);
+			        ItemMeta it = grass.getItemMeta();
+			        it.setDisplayName("§aTp");
+			        grass.setItemMeta(it);
+			        player.getInventory().setItem(3,grass);
+			        
+			        ItemStack plume = new ItemStack(Material.FEATHER ,1);
+			        ItemMeta p = plume.getItemMeta();
+			        p.setDisplayName("§fFly");
+			        plume.setItemMeta(p);
+			        player.getInventory().setItem(4,plume);
+				  	
+			        ItemStack zombi = new ItemStack(Material.ROTTEN_FLESH ,1);
+			        ItemMeta z = zombi.getItemMeta();
+			        z.setDisplayName("§fPop zombie");
+			        zombi.setItemMeta(z);
+			        player.getInventory().setItem(5,zombi);
+			        
+			        ItemStack barrier = new ItemStack(Material.BARRIER);
+			        ItemMeta customG = barrier.getItemMeta();
+			        customG.setDisplayName("§6Qui Name");
+			        barrier.setItemMeta(customG);
+			        player.getInventory().setItem(8,barrier);
 				  return true;
 			  }
-			  if(cmd.getName().equalsIgnoreCase("alert")) {
-				  
-				  if(args.length==0) {
-					  player.sendMessage("La commande est : /alert <message>");
-				  }
-				  if(args.length>=1) {
-					  StringBuilder bc = new StringBuilder();
-					  for(String part : args) {
-						  bc.append(part + " ");
-					  }
-					  Bukkit.broadcastMessage("[" + player.getName() + "]§b §9 §b" + bc.toString());
-					  //Objectif ; Reussir a ce que les differents arguments soient de differentes couleurs. 
-				  }
-				  return true;
-				  
-			  }
-
-	        }
+		
+		
+		
 		return false;
 	}
-	
-
 }
