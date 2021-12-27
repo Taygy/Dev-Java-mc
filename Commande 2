@@ -20,50 +20,219 @@ import org.bukkit.potion.PotionEffectType;
 
 public class MonPluginListeners implements Listener {
 
-	@EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-
-        Player player = event.getPlayer();
-        player.getInventory().clear();
-        //player.getInventory().addItem(new ItemStack(Material.IRON_SWORD, 3));
-
-
-        ItemStack customsword = new ItemStack(Material.COMPASS, 1);
-        ItemMeta customM = customsword.getItemMeta();
-        customM.setDisplayName("§cMon bamboo la");
-        customM.setLore(Arrays.asList("Premier ligne","2e ligne","3e Ligne"));
-        customM.addEnchant(Enchantment.DAMAGE_ALL, 200 , true);
-        customM.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-
-
-        customsword.setItemMeta(customM);
-
-        player.getInventory().setItemInMainHand(customsword);
-
-        //ItemStack customwool = new ItemStack(Material.ORANGE_WOOL,8);
-        //player.getInventory().setHelmet(customwool);
-
-        player.updateInventory();
-	}
-	@EventHandler
-	public void onInteract(PlayerInteractEvent event) {
+	//////////////////////////////////////////////////////////////////// Stick du StaffMOD /////////////////////////////////////////////////////////////////////////
+	@EventHandler //creer un inventaire pour changer l'enchant du stick
+	public void stickInventaire(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
+		ItemStack stick =event.getItem();
 		Action action = event.getAction();
-		ItemStack it = event.getItem();
+		if(stick ==null);
 		
-		if(it == null) return;
+		if(stick.getType()== Material.STICK && stick.hasItemMeta() && stick.getItemMeta().hasDisplayName() && stick.getItemMeta().getDisplayName().contains("§bStick KB")) {
+			if(action == Action.RIGHT_CLICK_AIR || action ==Action.RIGHT_CLICK_BLOCK) {
+				Inventory inv = Bukkit.createInventory(null, 9 , "§8Menu KB");
+			
+			    ItemStack stick1 = new ItemStack(Material.STICK, 5);      
+	            ItemMeta customB = stick1.getItemMeta();                  
+	            customB.setDisplayName("§bStick KB niv5");                
+	            customB.addEnchant(Enchantment.KNOCKBACK, 5 , true);      
+	            stick1.setItemMeta(customB);                              
+	            inv.setItem(3, stick1);  
+	            
+	         
+	            ItemStack stick2 = new ItemStack(Material.STICK, 10);
+	            ItemMeta customC = stick2.getItemMeta();
+	            customC.setDisplayName("§bStick KB niv10");
+	            customC.addEnchant(Enchantment.KNOCKBACK, 10 , true);
+	            stick2.setItemMeta(customC);
+	            inv.setItem(4, stick2);
+	        
+	            ItemStack stick3 = new ItemStack(Material.STICK, 15);
+	            ItemMeta customD = stick3.getItemMeta();
+	            customD.setDisplayName("§bStick KB niv15");
+	            customD.addEnchant(Enchantment.KNOCKBACK, 15 , true);
+	            stick3.setItemMeta(customD);
+	            inv.setItem(5, stick3);
+	            
+	        player.openInventory(inv);
+				
+	     
+			}
+	        
+		}
 		
-		if(it.getType()== Material.DIAMOND_HOE) {
-			if(action == Action.RIGHT_CLICK_AIR) {
-				player.sendMessage("Vous venez de faire un click");
+	}
+		
+	@EventHandler
+	public void onClick(InventoryClickEvent event) {
+		Player player =(Player) event.getWhoClicked();
+		ItemStack current = event.getCurrentItem();
+		
+		
+		if(current != null && player.getOpenInventory().getTitle().equalsIgnoreCase("§8Menu KB")) {
+			event.setCancelled(true);
+			if(current.getType() ==Material.STICK && current.getItemMeta().getDisplayName().startsWith("§bStick KB")) {
+				player.closeInventory();
+				player.getInventory().setItem(0, current);
+				player.updateInventory();
+			}	
+		}
+	}
+
+	
+	//////////////////////////////////////////////////////////////////// Changement de Gamemode ///////////////////////////////////////////////////////////////////
+	@EventHandler
+	public void headGm(PlayerInteractEvent event) {
+		Player player = event.getPlayer();
+		ItemStack head =event.getItem();
+		Action action = event.getAction();
+		
+		
+		if(head ==null)return;
+		
+		
+		
+		
+		if(head.getType()== Material.PLAYER_HEAD){
+			if(action == Action.LEFT_CLICK_AIR || action ==Action.LEFT_CLICK_BLOCK) {
+				GameMode gamemod = player.getGameMode();
+				if(gamemod == GameMode.CREATIVE) {
+					player.setGameMode(gamemod= GameMode.SURVIVAL);
+					player.sendMessage("§7Mode "+gamemod);
+					return;
+				}
+				if(gamemod == GameMode.SURVIVAL) {
+					player.setGameMode(gamemod= GameMode.CREATIVE);
+					player.sendMessage("§7Mode "+gamemod);
+					return;
+				}
+			}
+			
+			
+			if(action == Action.RIGHT_CLICK_AIR || action ==Action.RIGHT_CLICK_BLOCK) {	
+				
+				GameMode gamemod = player.getGameMode();
+				if(gamemod == GameMode.CREATIVE) {
+					player.setGameMode(gamemod= GameMode.SURVIVAL);
+					player.sendMessage("§7Mode "+gamemod);
+					return;
+				}
+				if(gamemod == GameMode.SURVIVAL) {
+					player.setGameMode(gamemod= GameMode.ADVENTURE);
+					player.sendMessage("§7Mode "+gamemod);
+					return;
+				}
+				if(gamemod == GameMode.ADVENTURE) {
+					player.setGameMode(gamemod= GameMode.SPECTATOR);
+					player.sendMessage("§7Mode "+gamemod);
+					return;
+				}
+				if(gamemod == GameMode.SPECTATOR) {	
+					player.setGameMode(gamemod= GameMode.CREATIVE);
+					player.sendMessage("§7Mode "+gamemod);
+					return;
+				}
 			}
 		}
-		if(it.getType() == Material.COMPASS && it.hasItemMeta() && it.getItemMeta().hasDisplayName() && it.getItemMeta().getDisplayName().equalsIgnoreCase("§cMon bamboo la")) {
-			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
+	}
+
+	////////////////////////////////////////////////////////////////////LAVA BUCKET ////////////////////////////////////////////////////////////////////
+
+	@EventHandler
+	public void Lavakill(PlayerInteractEvent event) {
+		Player player = event.getPlayer();
+		ItemStack lava =event.getItem();
+		Action action = event.getAction();
+
+		
+		if(lava ==null)return;
+		
+		if(lava.getType()== Material.LAVA_BUCKET && lava.hasItemMeta() && lava.getItemMeta().hasDisplayName() && lava.getItemMeta().getDisplayName().contains("§5Kill") ) {
+			if(action == Action.RIGHT_CLICK_AIR || action ==Action.RIGHT_CLICK_BLOCK) {	
+				player.chat("/kill");
+			}
+			
 		}
-		
-		
-		
+
 	}
 	
+////////////////////////////////////////////////////////////////////TP 0 100 0 ////////////////////////////////////////////////////////////////////
+	@EventHandler
+    public void onGrass(PlayerInteractEvent event) {
+
+        Player player =event.getPlayer();
+        Action action = event.getAction();
+        ItemStack grass = event.getItem();
+
+
+        if(grass == null) return;
+
+        if(grass.getType() == Material.GRASS_BLOCK && grass.hasItemMeta() && grass.getItemMeta().hasDisplayName() && grass.getItemMeta().getDisplayName().equalsIgnoreCase("§aTp") ) {
+            if(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK ) {
+                player.chat("/tp 0 100 0");
+
+                    }
+
+                }
+
+
+        }
+////////////////////////////////////////////////////////////////////FLY ////////////////////////////////////////////////////////////////////
+	@EventHandler
+	public void plumeFly(PlayerInteractEvent event) {
+		Player player = event.getPlayer();
+		ItemStack plume =event.getItem();
+		Action action = event.getAction();
+		GameMode gamemod = player.getGameMode();
+		
+		if(plume ==null)return;
+		
+		if(plume.getType() == Material.FEATHER && plume.hasItemMeta() && plume.getItemMeta().hasDisplayName() && plume.getItemMeta().getDisplayName().equalsIgnoreCase("§fFly") ) {
+			if(action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK ) {
+				
+				
+				if(gamemod == GameMode.SURVIVAL || gamemod == GameMode.ADVENTURE ) {
+					player.sendMessage("§7Vous pouvez Fly");
+					player.setAllowFlight(true);	
+				}
+			}
+			if(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK ) {
+				if(gamemod == GameMode.SURVIVAL || gamemod == GameMode.ADVENTURE ) {
+					player.sendMessage("§7Vous ne pouvez plus Fly");
+					player.setAllowFlight(false);
+				}
+				
+			}
+		}
+		
+	}
+
+////////////////////////////////////////////////////////////////////POP ZOMBIE ////////////////////////////////////////////////////////////////////
+	@EventHandler
+	public void zombiPop(PlayerInteractEvent event) {
+		Player player = event.getPlayer();
+		ItemStack zombi =event.getItem();
+		Action action = event.getAction();
+		
+		if(zombi ==null)return;
+		
+		if(zombi.getType() == Material.FEATHER && zombi.hasItemMeta() && zombi.getItemMeta().hasDisplayName() && zombi.getItemMeta().getDisplayName().equalsIgnoreCase("§fPop zombi") ) {
+			if(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK ) {
+				player.
+			
+		
+			if(action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK ) {
+				 player.getWorld().spawnEntity(player.getLocation(), EntityType.ZOMBIE);
+				
+			
+		
+			}
+		}
+		}
+	}
+	
+		
+
+
+
 }
